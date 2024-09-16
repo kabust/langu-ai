@@ -1,8 +1,12 @@
-import sounddevice as sd
-import numpy as np
-from openai import OpenAI
+from pathlib import Path
 
-# import scipy.io.wavfile as wav
+import sounddevice as sd
+import speech_recognition as sr
+from pydub import AudioSegment
+from pydub.playback import play
+import numpy as np
+
+from openai import OpenAI
 
 
 class AudioHandler:
@@ -10,6 +14,7 @@ class AudioHandler:
         self.client = client
         self.fs = 44100
         self.duration = 5  # seconds
+        self.recognizer = sr.Recognizer()
 
     def stream_audio_input(self) -> np.ndarray:
         print("Talk...")
@@ -18,19 +23,41 @@ class AudioHandler:
         return my_recording
 
     def speech_to_text(self, audio: np.ndarray | None = None) -> str:
-        if not audio:
-            audio = self.stream_audio_input()
+        try:
+            print("Talk...")
+            with sr.Microphone() as source2:
+                self.recognizer.adjust_for_ambient_noise(source2, duration=0.2)
+                audio2 = self.recognizer.listen(source2)
 
-        audio.tofile("audio.mp3")
-        audio = open("audio.mp3", "rb")
+                print("Getting text...")
+                audio_file_path = Path(__file__).parent / "speech.wav"
+                with open(audio_file_path, "wb") as f:
+                    f.write(audio2.get_wav_data())
 
-        transcription = self.client.audio.transcriptions.create(
-            file=audio,
-            model="whisper-1",
-            response_format="text",
+                with open(audio_file_path, "rb") as audio_file:
+                    transcript = self.client.audio.transcriptions.create(model="whisper-1", file=audio_file)
+
+                text = transcript.text
+                print(text)
+                return text
+
+        except sr.RequestError as e:
+            print(e)
+
+        except sr.UnknownValueError as e:
+            print(e)
+
+    def text_to_speech(self, speech: str) -> None:
+        response_file_path = Path(__file__).parent / "response.mp3"
+
+        response = self.client.audio.speech.create(
+            model="tts-1",
+            voice="alloy",
+            input=speech
         )
-        return transcription.text
+        response.stream_to_file(response_file_path)
 
-# print("Playing the recording")
-# sd.play(my_recording, fs)
-# sd.wait()
+        audio_response = AudioSegment.from_mp3(response_file_path)
+        print("Playing response")
+        print(response_file_path)
+        play(audio_response)
