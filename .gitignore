@@ -320,4 +320,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+*.wav
+*.mp3
+
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all,python,windows,macos
