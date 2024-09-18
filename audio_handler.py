@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import sounddevice as sd
@@ -12,15 +13,7 @@ from openai import OpenAI
 class AudioHandler:
     def __init__(self, client: OpenAI) -> None:
         self.client = client
-        self.fs = 44100
-        self.duration = 5  # seconds
         self.recognizer = sr.Recognizer()
-
-    def stream_audio_input(self) -> np.ndarray:
-        print("Talk...")
-        my_recording = sd.rec(self.duration * self.fs, samplerate=self.fs, channels=2, dtype='float64')
-        sd.wait()
-        return my_recording
 
     def speech_to_text(self, audio: np.ndarray | None = None) -> str:
         try:
@@ -57,7 +50,14 @@ class AudioHandler:
         )
         response.stream_to_file(response_file_path)
 
-        audio_response = AudioSegment.from_mp3(response_file_path)
         print("Playing response")
-        print(response_file_path)
-        play(audio_response)
+        if os.name != "nt":
+            try:
+                os.system(f"start cmd /C \"afplay {response_file_path}\"")
+            # except Exception:
+            #     os.system(f"start cmd /C \"mpg123 {response_file_path}\"")
+            except FileNotFoundError:
+                print("File not found, can't play audio")
+        else:
+            audio_response = AudioSegment.from_mp3(response_file_path)
+            play(audio_response)
