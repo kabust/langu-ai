@@ -1,39 +1,15 @@
-import os
-import time
-import numpy as np
+from typing import Union
 
-from config import client
-from audio_input import AudioHandler
+from fastapi import FastAPI
 
-
-def main() -> None:
-    audio_handler = AudioHandler(client=client)
-
-    while True:
-        prompt_from_speech = audio_handler.speech_to_text()
-
-        start = time.time()
-        completion = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content":
-                    """
-                    You are a language tutor, use simple language as a real teacher and
-                    try to lead the conversation. Imagine that you have a 1 on 1 in-person
-                    meeting Also, emphasise grammatical and logical mistakes, but keep the dialog casual and engaging.
-                    """
-                 },
-                {
-                    "role": "user",
-                    "content": prompt_from_speech
-                }
-            ]
-        )
-        response = completion.choices[0].message.content
-        print("Took:", time.time() - start)
-        print(response)
-        audio_handler.text_to_speech(response)
+app = FastAPI()
 
 
-if __name__ == '__main__':
-    main()
+@app.get("/")
+async def read_root():
+    return {"Hello": "World"}
+
+
+@app.get("/items/{item_id}")
+async def read_item(item_id: int, q: Union[str, None] = None):
+    return {"item_id": item_id, "q": q}
