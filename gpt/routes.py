@@ -14,7 +14,19 @@ gpt_client_handler = GPTClientHandler(client=client)
 async def completion(prompt: str, db: AsyncSession = Depends(get_db)):
     client.chat.completions.create(
         model="gpt-4o-mini",
-        prompt=prompt,
+        messages=[
+                {"role": "system", "content":
+                    """
+                    You are a language tutor, use simple language as a real teacher and
+                    try to lead the conversation. Imagine that you have a 1 on 1 in-person meeting. 
+                    Also, emphasise grammatical and logical mistakes, but keep the dialog casual and engaging.
+                    """
+                 },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
     )
 
 
