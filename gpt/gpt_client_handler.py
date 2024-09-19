@@ -1,5 +1,7 @@
+import io
 import os
 from pathlib import Path
+from typing import BinaryIO
 
 import sounddevice as sd
 import speech_recognition as sr
@@ -10,12 +12,14 @@ import numpy as np
 from openai import OpenAI
 
 
-class AudioHandler:
+class GPTClientHandler:
     def __init__(self, client: OpenAI) -> None:
         self.client = client
         self.recognizer = sr.Recognizer()
+        self.record_audio_path = Path(__file__).parent / "recording.mp3"
+        self.response_audio_path = Path(__file__).parent / "response.mp3"
 
-    def speech_to_text(self, audio: np.ndarray | None = None) -> str:
+    def record_audio(self) -> BinaryIO:
         try:
             print("Talk...")
             with sr.Microphone() as source2:
@@ -23,41 +27,44 @@ class AudioHandler:
                 audio2 = self.recognizer.listen(source2)
 
                 print("Getting text...")
-                audio_file_path = Path(__file__).parent / "speech.wav"
-                with open(audio_file_path, "wb") as f:
+                with open(self.record_audio_path, "wb") as f:
                     f.write(audio2.get_wav_data())
+                    return f
 
-                with open(audio_file_path, "rb") as audio_file:
-                    transcript = self.client.audio.transcriptions.create(model="whisper-1", file=audio_file)
+        except sr.UnknownValueError:
+            print("Speech Recognition could not understand audio")
 
-                text = transcript.text
-                print(text)
-                return text
+    def speech_to_text(self, audio_bytes: bytes) -> str:
+        try:
+            filename = "recording.mp3"
+            buffer = io.BytesIO(audio_bytes)
+            buffer.name = filename
 
-        except sr.RequestError as e:
-            print(e)
+            transcript = self.client.audio.transcriptions.create(model="whisper-1", file=buffer)
 
-        except sr.UnknownValueError as e:
+            text = transcript.text
+            return text
+
+        except Exception as e:
             print(e)
 
     def text_to_speech(self, speech: str) -> None:
-        response_file_path = Path(__file__).parent / "response.mp3"
-
         response = self.client.audio.speech.create(
             model="tts-1",
             voice="alloy",
             input=speech
         )
-        response.stream_to_file(response_file_path)
+        response.stream_to_file(self.response_audio_path)
 
+    def play_audio(self) -> None:
         print("Playing response")
         if os.name != "nt":
             try:
-                os.system(f"start cmd /C \"afplay {response_file_path}\"")
+                os.system(f"start cmd /C \"afplay {self.response_audio_path}\"")
             # except Exception:
             #     os.system(f"start cmd /C \"mpg123 {response_file_path}\"")
             except FileNotFoundError:
                 print("File not found, can't play audio")
         else:
-            audio_response = AudioSegment.from_mp3(response_file_path)
+            audio_response = AudioSegment.from_mp3(self.response_audio_path)
             play(audio_response)

@@ -3,11 +3,11 @@ import time
 import numpy as np
 
 from config import client
-from audio_handler import AudioHandler
+from gpt_client_handler import GPTClientHandler
 
 
 def main() -> None:
-    audio_handler = AudioHandler(client=client)
+    audio_handler = GPTClientHandler(client=client)
 
     while True:
         prompt_from_speech = audio_handler.speech_to_text()
@@ -19,8 +19,8 @@ def main() -> None:
                 {"role": "system", "content":
                     """
                     You are a language tutor, use simple language as a real teacher and
-                    try to lead the conversation. Imagine that you have a 1 on 1 in-person
-                    meeting Also, emphasise grammatical and logical mistakes, but keep the dialog casual and engaging.
+                    try to lead the conversation. Imagine that you have a 1 on 1 in-person meeting. 
+                    Also, emphasise grammatical and logical mistakes, but keep the dialog casual and engaging.
                     """
                  },
                 {
