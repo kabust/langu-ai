@@ -1,19 +1,22 @@
 import io
 import os
-from pathlib import Path
-from typing import BinaryIO
-
+import numpy as np
 import sounddevice as sd
 import speech_recognition as sr
+
+from pathlib import Path
+from typing import BinaryIO
 from pydub import AudioSegment
 from pydub.playback import play
-import numpy as np
-
 from openai import OpenAI
 
 
 class GPTClientHandler:
-    def __init__(self, client: OpenAI) -> None:
+    def __init__(self, client: OpenAI, token: str) -> None:
+        self.headers = [
+            "Authorization: Bearer " + token,
+            "OpenAI-Beta: realtime=v1"
+        ]
         self.client = client
         self.recognizer = sr.Recognizer()
         self.record_audio_path = Path(__file__).parent / "recording.mp3"
