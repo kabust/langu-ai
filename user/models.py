@@ -12,7 +12,6 @@ class DBUser(Base):
     password = Column(String(255), nullable=False)
     first_name = Column(String(255))
     last_name = Column(String(255))
-    phone = Column(String(255))
     thread_id = Column(String(255))
 
     def __repr__(self):

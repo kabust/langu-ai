@@ -8,9 +8,11 @@ from user.routes import router as user_router
 
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="./static"), name="static")
 
 app.include_router(gpt_router, prefix="/gpt")
+app.include_router(user_router, prefix="/user")
+
 
 templates = settings.TEMPLATES
 
