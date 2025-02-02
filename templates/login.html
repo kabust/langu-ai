@@ -3,11 +3,9 @@
 {% block content %}
 
 <div class="position-absolute top-50 start-50 translate-middle text-center form">
-    <h1 style="margin-bottom: 24px;">Register</h1>
+    <h1 style="margin-bottom: 24px;">Log In</h1>
     <form method="post">
-        {% if error %}
-            <span class="text-danger">{{ error }}</span>
-        {% endif %}
+        <p class="text-danger" id="error-alert" style="display: none;"></p>
 
         <div class="mb-3">
             <input name="email" id="email" type="email" class="form-control" placeholder="Email address">
@@ -18,14 +16,11 @@
         </div>
 
         <div class="mb-3">
-            <input name="password-confirm" id="password-confirm" type="password" class="form-control" placeholder="Confirm password">
-        </div>
-
-        <div class="mb-3">
-            <input name="submit" id="submit" type="submit" class="form-control btn btn-primary">
+            <input name="submit" id="submit" type="button" value="Log In" class="form-control btn btn-primary"
+                onclick="login()">
         </div>
     </form>
-    <p>Have an account? <a href="{{ url_for('login_user') }}">Log In</a></p>
+    <p>Don't have an account? <a href="{{ url_for('register_user') }}">Register</a></p>
 </div>
 
 {% endblock %}

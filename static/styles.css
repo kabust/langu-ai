@@ -2,6 +2,10 @@ header {
     height: 70px;
   }
   
+a {
+  text-decoration: none !important;
+}
+
 .main-controls {
 padding-bottom: 0.7rem;
 height: 170px;
@@ -13,16 +17,6 @@ height: 170px;
     height: calc(100% - 240px - 0.7rem);
     overflow: scroll;
   }
-
-label {
-font-family: "NotoColorEmoji";
-font-size: 3rem;
-position: absolute;
-top: 2px;
-right: 3px;
-z-index: 5;
-cursor: pointer;
-}
 
 input[type="checkbox"] {
 position: absolute;
@@ -48,4 +42,8 @@ background-image: linear-gradient(
 
 input[type="checkbox"]:checked ~ aside {
 transform: translateX(0);
+}
+
+.form {
+  width: 400px;
 }
