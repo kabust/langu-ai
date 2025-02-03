@@ -1,9 +1,32 @@
+main {
+  animation-name: main-animation;
+  animation-duration: 1.5s;
+}
+
+@keyframes main-animation {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
 header {
     height: 70px;
   }
   
 a {
   text-decoration: none !important;
+}
+
+.user-info {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  position: fixed;
+  right: 24px;
+  top: 24px;
+}
+
+.main-title {
+  margin-bottom: 40px;
 }
 
 .main-controls {
@@ -46,4 +69,13 @@ transform: translateX(0);
 
 .form {
   width: 400px;
+}
+
+#dropdownSelector select {
+  margin-bottom: 16px;
+}
+
+#dropdownSelector input {
+  margin-top: 16px;
+  width: -webkit-fill-available;
 }

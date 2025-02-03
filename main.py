@@ -3,11 +3,12 @@ from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from dependencies import get_current_user, get_db
+from dependencies import get_current_user_email, get_db
 from settings import settings
 from gpt.routes import router as gpt_router
 from user.crud import get_user_by_email
 from user.routes import router as user_router
+from user.schemas import UserCreate
 
 
 app = FastAPI()
@@ -22,34 +23,19 @@ templates = settings.TEMPLATES
 
 
 @app.get("/", response_class=HTMLResponse)
-async def index(request: Request, user: dict = None):
-    try:
-        return templates.TemplateResponse(
-            request=request, name="index.html"
-        )
-    except HTTPException:
-        return RedirectResponse("/user/login")
-    
-
-@app.post("/", response_class=HTMLResponse)
-async def index(user: dict = None):
-    try:
-        context = {}
-        if user:
-            context.update(user=user)
-        return templates.TemplateResponse(
-            name="index.html", context=context
-        )
-    except HTTPException:
-        return RedirectResponse("/user/login")
-
-
-@app.get("/auth")
-async def auth_user(
-    request: Request,
+async def index(
+    request: Request, 
     db: AsyncSession = Depends(get_db),
-    current_user: str = Depends(get_current_user),
+    user_email: str = Depends(get_current_user_email)
 ):
-    user = await get_user_by_email(db, current_user)
-    request.state.user = user
-    return user
+    try:
+        user = await get_user_by_email(db, user_email)
+    except HTTPException:
+        user = None
+    context = {"user": user}
+    return templates.TemplateResponse(request=request, name="index.html", context=context)
+
+
+@app.exception_handler(401)
+async def unauthorized_redirect(*args, **kwargs):
+    return RedirectResponse("/user/login")

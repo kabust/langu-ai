@@ -1,19 +1,35 @@
 function checkValue() {
-    let startBtn = document.getElementById('startBtn');
-    let originalLangSelected = document.getElementById('languages');
-    let learningLangSelected = document.getElementById('languages');
-    let dropdownSelector = document.getElementById('dropdownSelector');
+    let submitSelectedLanguages = document.getElementById('submitSelectedLanguages');
+    let languageNative = document.getElementById('languageNative');
+    let languageToLearn = document.getElementById('languageToLearn');
 
-    if (languageSelected.value != 'blank') {
-        startBtn.disabled = false;
-        startBtn.removeAttribute('hidden');
-        startBtn.setAttribute('originalLang', originalLangSelected.value)
-        startBtn.setAttribute('learningLang', learningLangSelected.value)
-        dropdownSelector.setAttribute('hidden', '');
+    if (languageNative.value != '1' && languageToLearn.value != '1') {
+        submitSelectedLanguages.disabled = false;
     } else {
-        startBtn.disabled = true;
+        submitSelectedLanguages.disabled = true;
+    }
+
+    for (let i = 1; i <= languageNative.options.length; i++) {
+        document.querySelector(`#languageNative > option:nth-child(${i})`).disabled = false;
+    }
+
+    for (let i = 1; i <= languageToLearn.options.length; i++) {
+        document.querySelector(`#languageToLearn > option:nth-child(${i})`).disabled = false;
+    }
+
+    if (languageToLearn.value != "1") {
+        document.querySelector(`#languageNative > option:nth-child(${languageToLearn.value})`).disabled = true;
+    }
+
+    if (languageNative.value != "1") {
+        document.querySelector(`#languageToLearn > option:nth-child(${languageNative.value})`).disabled = true;
     }
 };
+
+
+function disableBlank() {
+    let blankOption = document.getElementById
+}
 
 
 function startLesson() {
@@ -22,13 +38,3 @@ function startLesson() {
         .then(data => console.log(data))
         .catch(error => console.error(error));
 }
-
-
-async function indexAuth() {
-    const user = await getProfile();
-
-    document.getElementById("indexBlock").innerHTML = user ? html_auth : html_unauth
-}
-
-
-window.onload = indexAuth;

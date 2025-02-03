@@ -13,7 +13,7 @@ async def get_all_users(db: AsyncSession) -> models.DBUser:
     return users.scalar()
 
 
-async def get_user_by_id(db: AsyncSession, user_id: int) -> models.DBUser:
+async def get_user_by_id(db: AsyncSession, user_id: int) -> models.DBUser | None:
     query = select(models.DBUser).where(models.DBUser.id == user_id)
     user = await db.execute(query)
     user = user.scalar_one_or_none()
@@ -22,7 +22,7 @@ async def get_user_by_id(db: AsyncSession, user_id: int) -> models.DBUser:
     return user
 
 
-async def get_user_by_email(db: AsyncSession, email: str) -> models.DBUser:
+async def get_user_by_email(db: AsyncSession, email: str) -> models.DBUser | None:
     query = select(models.DBUser).where(models.DBUser.email == email)
     user = await db.execute(query)
     user = user.scalar_one_or_none()

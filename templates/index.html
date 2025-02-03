@@ -2,12 +2,11 @@
 
 {% block content %}
 <div class="position-absolute top-50 start-50 translate-middle text-center" onload="indexAuth()">
-    <h1>LanguAI Tutor</h1>
+    <h1 class="main-title">LanguAI Tutor</h1>
     <button class="btn btn-primary p-5 rounded-circle btn-lg" id="startBtn" hidden onclick="startLesson()">
         START
     </button>
-    {{request.state}}
-    {% if not request.state.user %}
+    {% if not user %}
         <p>
             Welcome! 
             <a href="{{ url_for('login_user') }}">Login</a> or 
@@ -15,23 +14,22 @@
         </p>
     {% else %}
         <div id="dropdownSelector">
+            <p>Welcome! Let's begin your learning</p>
             <form method="post">
-                <p>Welcome! Select your language</p>
-                <select name="languages" id="languages" required onchange="checkValue()">
-                    <option value="blank">---</option>
-                    <option value="eng">English</option>
-                    <option value="pol">Polish</option>
-                    <option value="ukr">Ukrainian</option>
+                <select name="languageNative" id="languageNative" class="form-select" required onchange="checkValue()">
+                    <option value="1">Select your native language</option>
+                    <option value="2">English</option>
+                    <option value="3">Polish</option>
+                    <option value="4">Ukrainian</option>
                 </select>  
             
-                <p>Welcome! Select language you want to learn</p>
-                <select name="languages" id="languages" required onchange="checkValue()">
-                    <option value="blank">---</option>
-                    <option value="eng">English</option>
-                    <option value="pol">Polish</option>
-                    <option value="ukr">Ukrainian</option>
+                <select name="languageToLearn" id="languageToLearn" class="form-select" required onchange="checkValue()">
+                    <option value="1">Select language you want to learn</option>
+                    <option value="2">English</option>
+                    <option value="3">Polish</option>
+                    <option value="4">Ukrainian</option>
                 </select>
-                
+                <input type="submit" value="Apply" id="submitSelectedLanguages" class="btn btn-primary" disabled>
             </form> 
         </div>
     {% endif %}

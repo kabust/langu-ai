@@ -9,7 +9,7 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str | None = "sqlite+aiosqlite:///./project.db"
     TEMPLATES = Jinja2Templates(directory="templates")
-    ACCESS_TOKEN_EXPIRE_MINUTES = 60
+    ACCESS_TOKEN_EXPIRE_MS = 7200
     SECRET_KEY = secrets.token_urlsafe(32)
     ALGORITHM = "HS256"
 

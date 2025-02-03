@@ -2,6 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Form
 
+from fastapi.responses import RedirectResponse
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -80,6 +81,16 @@ async def login_user(
         user = schemas.UserCreate(email=email, password=password)
         await crud.authenticate_user(db, user)
         access_token = create_access_token(data={"sub": user.email})
-        return {"access_token": access_token, "token_type": "bearer"}
+        response = RedirectResponse(url="/", status_code=302)
+        response.set_cookie(key="access_token", value=access_token, httponly=True, max_age=settings.ACCESS_TOKEN_EXPIRE_MS)
+        return response
+    
     except HTTPException as e:
         raise e
+
+
+@router.get("/logout")
+async def logout_user():
+    response = RedirectResponse(url="/user/login", status_code=302)
+    response.delete_cookie("access_token")
+    return response
