@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import Depends, FastAPI, Form, HTTPException, Request
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from dependencies import get_current_user_email, get_db
@@ -34,6 +34,24 @@ async def index(
         user = None
     context = {"user": user}
     return templates.TemplateResponse(request=request, name="index.html", context=context)
+
+
+@app.post("/set_languages")
+async def set_languages(
+    languageNative: str = Form(examples=["Ukrainian", "Polish", "English"]),
+    languageToLearn: str = Form(examples=["Ukrainian", "Polish", "English"])
+):
+    response = Response()
+    response.set_cookie(key="languageNative", value=languageNative, httponly=True, max_age=settings.ACCESS_TOKEN_EXPIRE_MS)
+    response.set_cookie(key="languageToLearn", value=languageToLearn, httponly=True, max_age=settings.ACCESS_TOKEN_EXPIRE_MS)
+    return response
+
+
+@app.get("/get_languages")
+async def get_languages(request: Request):
+    languageNative = request.cookies.get("languageNative")
+    languageToLearn = request.cookies.get("languageToLearn")
+    return {"languageNative": languageNative, "languageToLearn": languageToLearn}
 
 
 @app.exception_handler(401)

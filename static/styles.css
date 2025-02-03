@@ -4,16 +4,36 @@ main {
 }
 
 @keyframes main-animation {
-  from {opacity: 0;}
-  to {opacity: 1;}
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 header {
-    height: 70px;
-  }
-  
+  height: 70px;
+}
+
 a {
   text-decoration: none !important;
+}
+
+.logo {
+  width: 50px;
+}
+
+.header-with-logo {
+  display: flex;
+  flex-direction: row;
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  align-items: center;
+  gap: 16px;
+  color: #0d6efd;
 }
 
 .user-info {
@@ -25,46 +45,49 @@ a {
   top: 24px;
 }
 
+.header-link:hover {
+  color: inherit;
+}
+
 .main-title {
-  margin-bottom: 40px;
+  margin-bottom: 0px;
+  font-size: 24px;
 }
 
 .main-controls {
-padding-bottom: 0.7rem;
-height: 170px;
+  padding-bottom: 0.7rem;
+  height: 170px;
 }
-  
+
 .sound-clips {
-    box-shadow: inset 0 3px 4px rgb(0 0 0 / 70%);
-    background-color: rgb(0 0 0 / 10%);
-    height: calc(100% - 240px - 0.7rem);
-    overflow: scroll;
-  }
+  box-shadow: inset 0 3px 4px rgb(0 0 0 / 70%);
+  background-color: rgb(0 0 0 / 10%);
+  height: calc(100% - 240px - 0.7rem);
+  overflow: scroll;
+}
 
 input[type="checkbox"] {
-position: absolute;
-top: -100px;
+  position: absolute;
+  top: -100px;
 }
 
 aside {
-position: fixed;
-top: 0;
-left: 0;
-text-shadow: 1px 1px 1px black;
-width: 100%;
-height: 100%;
-transform: translateX(100%);
-transition: 0.6s all;
-background-color: #999;
-background-image: linear-gradient(
-    to top right,
-    rgb(0 0 0 / 0%),
-    rgb(0 0 0 / 50%)
-);
+  position: fixed;
+  top: 0;
+  left: 0;
+  text-shadow: 1px 1px 1px black;
+  width: 100%;
+  height: 100%;
+  transform: translateX(100%);
+  transition: 0.6s all;
+  background-color: #999;
+  background-image: linear-gradient(to top right,
+      rgb(0 0 0 / 0%),
+      rgb(0 0 0 / 50%));
 }
 
-input[type="checkbox"]:checked ~ aside {
-transform: translateX(0);
+input[type="checkbox"]:checked~aside {
+  transform: translateX(0);
 }
 
 .form {
@@ -78,4 +101,18 @@ transform: translateX(0);
 #dropdownSelector input {
   margin-top: 16px;
   width: -webkit-fill-available;
+}
+
+#startBtn {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.index-start {
+  animation-timing-function: ease-in;
 }

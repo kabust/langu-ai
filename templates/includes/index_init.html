@@ -1,0 +1,28 @@
+{% if not user %}
+<p>
+    Welcome!
+    <a href="{{ url_for('login_user') }}">Login</a> or
+    <a href="{{ url_for('register_user') }}">Register</a> first
+</p>
+{% else %}
+<div id="dropdownSelector">
+    <p>Welcome! Let's begin your learning</p>
+    <form method="post">
+        <select name="languageNative" id="languageNative" class="form-select" required onchange="checkValue()">
+            <option value="1">Select your native language</option>
+            <option value="2">English</option>
+            <option value="3">Polish</option>
+            <option value="4">Ukrainian</option>
+        </select>
+
+        <select name="languageToLearn" id="languageToLearn" class="form-select" required onchange="checkValue()">
+            <option value="1">Select language you want to learn</option>
+            <option value="2">English</option>
+            <option value="3">Polish</option>
+            <option value="4">Ukrainian</option>
+        </select>
+        <input type="button" value="Apply" id="submitSelectedLanguages" class="btn btn-primary" disabled
+            onclick="submitLanguagesSelection()">
+    </form>
+</div>
+{% endif %}
