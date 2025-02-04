@@ -1,0 +1,16 @@
+languages:
+  English: "Hi! I'm going to be your personal teacher helping you learning {language}. What topic you'd like to start with?"
+  Ukrainian: "Привіт! Я буду твоїм персональним вчителем {language}. З якої теми хотів би почати?"
+  Polish: "Cześć! Będę Twoim personalnym nauczyczelem języka {language}. Z jakiego tematu chciałbyś zacząć?"
+
+English:
+  Polish: "Polish"
+  Ukrainian: "Ukrainian"
+
+Ukrainian:
+  English: "Англійської"
+  Polish: "Польскої"
+
+Polish:
+  English: "Angielskiego"
+  Ukrainian: "Ukraińskiego"

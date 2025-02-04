@@ -2,6 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, FastAPI, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 from dependencies import get_current_user_email, get_db
 from settings import settings
@@ -48,12 +49,18 @@ async def set_languages(
 
 
 @app.get("/get_languages")
-async def get_languages(request: Request):
-    languageNative = request.cookies.get("languageNative")
-    languageToLearn = request.cookies.get("languageToLearn")
-    return {"languageNative": languageNative, "languageToLearn": languageToLearn}
+async def get_languages(
+    request: Request, 
+    user_email: str = Depends(get_current_user_email)
+):
+    if user_email:
+        languageNative = request.cookies.get("languageNative")
+        languageToLearn = request.cookies.get("languageToLearn")
+        return {"languageNative": languageNative, "languageToLearn": languageToLearn}
+    else:
+        HTTPException(401, "Unauthorized")
 
 
-@app.exception_handler(401)
-async def unauthorized_redirect(*args, **kwargs):
-    return RedirectResponse("/user/login")
+# @app.exception_handler(401)
+# async def unauthorized_redirect(*args, **kwargs):
+#     return RedirectResponse("/user/login")

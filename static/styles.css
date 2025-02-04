@@ -1,6 +1,14 @@
-main {
+main, #streamMessage {
   animation-name: main-animation;
   animation-duration: 1.5s;
+}
+
+#streamMessage{
+  position: absolute;
+  width: 400px;
+  right: 50%;
+  transform: translate(50%, 20%);
+  display: none;
 }
 
 @keyframes main-animation {
@@ -103,14 +111,14 @@ input[type="checkbox"]:checked~aside {
   width: -webkit-fill-available;
 }
 
-#startBtn {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+.startBtn {
+  width: 100px !important;
+  height: 100px !important;
+  border-radius: 50% !important;
+  display: flex !important; 
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
 }
 
 .index-start {

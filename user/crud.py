@@ -35,8 +35,22 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate) -> models.DBUs
     user.password = hashlib.sha256(user.password.encode("utf-8")).hexdigest()
     query = insert(models.DBUser).values(**user.model_dump())
     new_user = await db.execute(query)
+    new_user = new_user.scalar_one()
     await db.commit()
-    return new_user.scalar_one()
+    return new_user
+
+
+async def update_user_thread_id_by_email(
+    db: AsyncSession, email: str, thread_id: str
+) -> models.DBUser:
+    query = (
+        update(models.DBUser)
+        .where(models.DBUser.email == email)
+        .values(thread_id=thread_id)
+    )
+    updated_user = await db.execute(query)
+    await db.commit()
+    return updated_user
 
 
 async def authenticate_user(
