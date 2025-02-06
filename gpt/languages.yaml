@@ -1,7 +1,17 @@
 languages:
-  English: "Hi! I'm going to be your personal teacher helping you learning {language}. What topic you'd like to start with?"
-  Ukrainian: "Привіт! Я буду твоїм персональним вчителем {language}. З якої теми хотів би почати?"
-  Polish: "Cześć! Będę Twoim personalnym nauczyczelem języka {language}. Z jakiego tematu chciałbyś zacząć?"
+  no_thread_init:
+    English: "Hi! I'm going to be your personal teacher helping you learning {language}. What topic you'd like to start with?"
+    Ukrainian: "Привіт! Я буду твоїм персональним вчителем {language}. З якої теми хотів би почати?"
+    Polish: "Cześć! Będę Twoim personalnym nauczyczelem języka {language}. Z jakiego tematu chciałbyś zacząć?"
+  thread_init:
+    has_message:
+      English: "Let's begin our lesson, we stopped on {last_message}, do you have anything specific on mind to discuss now?"
+      Ukrainian: "Давай почнемо наш урок, ми закінчили на {last_message}, маєш щось конкретне на думці що хотілося б обговорити?"
+      Polish: "Zacznijmy nasze zajęcie, ostatnio skończyliśmy na {last_message}, masz coś konkretnego na myśli do omównienia?"
+    no_message:
+      English: "Hi! Oh, hmmm... Could you remind me where we finished previously? Seems like I forgot our last topic."
+      Ukrainian: "Привіт! О, хм... Не міг би нагадати, на чому ми закінчили? Здається, я забув нашу останню тему."
+      Polish: "Cześć! Oh, hmmm... Mógłbyś mi przypomnieć, gdzie skończyliśmy poprzednio? Wygląda na to, że zapomniałem o naszym ostatnim temacie."
 
 English:
   Polish: "Polish"

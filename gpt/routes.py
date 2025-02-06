@@ -1,21 +1,23 @@
+import urllib
 import yaml
 
+from typing import Annotated
 from fastapi import (
     APIRouter,
     Depends,
+    File,
     HTTPException,
     Request,
     UploadFile,
-    WebSocket
+    WebSocket,
 )
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import Response, FileResponse
+from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from dependencies import get_current_user_email, get_db
 from settings import settings
 from gpt.gpt_client_handler import GPTClientHandler
-from gpt.config import client, assistant_id, ASSISTANT_ID, TOKEN
+from gpt.config import client, ASSISTANT_ID, TOKEN
 from user.crud import get_user_by_email, update_user_thread_id_by_email
 
 
@@ -36,58 +38,67 @@ async def init_lesson(
     languageToLearn = request.cookies.get("languageToLearn")
     user = await get_user_by_email(db, user_email)
 
-    if not user.thread_id:
-        print("User has thread_id")
-        with open("gpt/languages.yaml", "r", encoding="utf8") as file:
-            languages_map = yaml.safe_load(file)
+    with open("gpt/languages.yaml", "r", encoding="utf8") as file:
+        languages_map = yaml.safe_load(file)
 
+    if not user.thread_id:
         thread = client.beta.threads.create()
         user = await update_user_thread_id_by_email(db, user_email, thread.id)
 
-        message = languages_map["languages"][languageNative].format(
+        message = languages_map["languages"]["no_thread_init"][languageNative].format(
             language=languages_map[languageNative][languageToLearn]
         )
-        print(message)
         client.beta.threads.messages.create(
             thread_id=thread.id, content=message, role="assistant"
         )
     else:
-        print("User doesn't have thread_id")
         thread = client.beta.threads.retrieve(user.thread_id)
         thread_messages = client.beta.threads.messages.list(thread.id)
-        thread_messages = thread_messages.model_dump()
-        last_id = thread_messages["last_id"]
+
         try:
-            last_message = [
-                message["content"]["value"] 
-                for message in thread_messages["data"]
-                if message.get("last_id") == last_id
-            ][0]
-            message = f"Let's begin our lesson, we stopped on {last_message}, do you have anything specific on mind to discuss now?"
+            last_message = thread_messages.data[0].content[0].text.value
+
+            topic = gpt_client_handler.completion(
+                f"Create a short summary (up to 10 words) for this topic: {last_message}",
+                thread.id
+            )
+
+            message = languages_map["languages"]["thread_init"][
+                "has_message"
+            ][languageNative].format(last_message=topic)
         except (IndexError, KeyError) as e:
-            message = f"Hmmm... Could you remind me where we finished previously? Seems like I forgot our last topic."
-
+            message = languages_map["languages"]["thread_init"]["no_message"][languageNative]
     audio = gpt_client_handler.text_to_speech(message)
-    return Response(content=audio, media_type="audio/mpeg", headers={"X-Message": message})
+
+    response = Response(content=audio, media_type="audio/mpeg")
+    encoded_message = urllib.parse.quote(message)
+    response.headers["X-Message"] = encoded_message
+    return response
 
 
-@router.post("/process_recording")
-async def process_recording(
+@router.post("/prepare_answer")
+async def prepare_answer(
     file: UploadFile,
     user_email: str = Depends(get_current_user_email),
     db: AsyncSession = Depends(get_db),
 ) -> Response:
-    try:
-        user = await get_user_by_email(db, user_email)
+    user = await get_user_by_email(db, user_email)
+    audio_bytes = await file.read()
+    transcription = gpt_client_handler.speech_to_text(audio_bytes)
 
-        audio_bytes = await file.read()
-        transcription = gpt_client_handler.speech_to_text(audio_bytes)
-        print(transcription)
-        gpt_response = gpt_client_handler.completion(transcription, user.thread_id)
-        print(gpt_response)
-        return Response(gpt_response)
-    except Exception as e:
-        return Response(f"Couldn't process the recording: {e}", 500)
+    if not transcription:
+        raise HTTPException(500, "Couldn't get the transcription")
+
+    gpt_response = gpt_client_handler.completion(transcription, user.thread_id)
+
+    audio = gpt_client_handler.text_to_speech(gpt_response)
+    print(transcription)
+    print(gpt_response)
+
+    response = Response(content=audio, media_type="audio/mpeg")
+    encoded_message = urllib.parse.quote(gpt_response)
+    response.headers["X-Message"] = encoded_message
+    return response
 
 
 @router.post("/completion")

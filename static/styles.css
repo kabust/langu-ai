@@ -1,4 +1,4 @@
-main, #streamMessage {
+main, #streamMessage, #startBtn {
   animation-name: main-animation;
   animation-duration: 1.5s;
 }
@@ -7,8 +7,9 @@ main, #streamMessage {
   position: absolute;
   width: 400px;
   right: 50%;
-  transform: translate(50%, 20%);
+  transform: translate(50%, 0%);
   display: none;
+  margin-top: 24px;
 }
 
 @keyframes main-animation {
@@ -123,4 +124,52 @@ input[type="checkbox"]:checked~aside {
 
 .index-start {
   animation-timing-function: ease-in;
+}
+
+#loader {
+  display: flex;
+  height: 12px;
+  gap: 6px;
+  position: absolute;
+  right: 50%;
+  transform: translate(50%, 0%);
+  top: -30%;
+}
+
+#loader span {
+  width: 12px;
+  background-color: #0d6efd;
+  border-radius: 100%;
+  animation-name: loader-animation;
+  animation-duration: 1.5s;
+  animation-iteration-count: infinite;
+}
+
+#loader span:nth-child(1) {
+  animation-delay: 80ms;
+}
+
+#loader span:nth-child(2) {
+  animation-delay: 160ms;
+}
+
+#loader span:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+@keyframes loader-animation {
+  0% {
+    transform: translateY(0px);
+    opacity: 0;
+  }
+
+  50% {
+    transform: translateY(-24px);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(0px);
+    opacity: 0;
+  }
 }

@@ -1,3 +1,7 @@
+let audioCtx;
+let buffer;
+let source;
+
 let mediaRecorder;
 let chunks = [];
 
@@ -10,7 +14,6 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .then((stream) => {
             mediaRecorder = new MediaRecorder(stream);
 
-            // ✅ Attach event listeners *inside* the promise after initialization
             mediaRecorder.ondataavailable = (e) => {
                 chunks.push(e.data);
             };
@@ -18,22 +21,49 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             mediaRecorder.onstop = () => {
                 console.log("Recorder stopped");
 
-                const blob = new Blob(chunks, { type: "audio/mpeg; codecs=opus" });
-                // const formData = new URLSearchParams();
-                // formData.append("file", blob);
-                fetch("/gpt/process_recording", {
+                const startBtn = document.getElementById("startBtn");
+                const play = document.getElementById("play");
+                const message = document.getElementById("streamMessage");
+                const loader = document.getElementById("loader");
+                loader.hidden = false;
+
+                const blob = new Blob(chunks, { type: "audio/mpeg;" });
+                const file = new File([blob], "recording.mp3", { type: "audio/mpeg;" });
+                const formData = new FormData();
+                formData.append("file", file);
+                startBtn.disabled = true;
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                };
+                fetch("/gpt/prepare_answer", {
                     method: "POST",
-                    headers: { "Content-Type": "audio/mpeg" },
-                    body: {"file": blob}
+                    body: formData
                 })
                     .then((response) => {
                         if (!response.ok) {
                             throw new Error(`HTTP error! Status: ${response.status}`);
                         }
 
-                        return response.blob();
+                        const contentType = response.headers.get("content-type");
+                        if (!contentType.includes("audio")) {
+                            throw new Error(`Received invalid content instead of audio! (${contentType})`);
+                        }
+                        message.style.display = "none";
+                        message.innerHTML = decodeURIComponent(response.headers.get("X-Message"));
+                        return response.arrayBuffer();
+                    })
+                    .then(arrayBuffer => audioCtx.decodeAudioData(arrayBuffer))
+                    .then(buffer => {
+                        message.style.display = "block";
+                        startBtn.disabled = false;
+                        source = audioCtx.createBufferSource();
+                        source.buffer = buffer;
+                        source.connect(audioCtx.destination);
+                        source.start();
+                        play.disabled = true;
+                        loader.hidden = true;
                     });
-            };
+            }
         })
         .catch((err) => {
             console.error(`The following getUserMedia error occurred: ${err}`);
@@ -54,7 +84,6 @@ function recordClip() {
     startStopButton.classList.add("btn-danger");
     mediaRecorder.start();
     console.log(mediaRecorder.state);
-    console.log("Recorder started");
     startStopButton.style.background = "red";
     startStopButton.style.color = "black";
     startStopButton.setAttribute("onclick", "stopClip()");
@@ -72,7 +101,6 @@ function stopClip() {
     startStopButton.classList.remove("btn-danger");
     mediaRecorder.stop();
     console.log(mediaRecorder.state);
-    console.log("Recorder stopped");
     startStopButton.style.background = "";
     startStopButton.style.color = "";
     startStopButton.setAttribute("onclick", "recordClip()");
