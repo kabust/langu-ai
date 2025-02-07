@@ -1,0 +1,175 @@
+main, #streamMessage, #startBtn {
+  animation-name: main-animation;
+  animation-duration: 1.5s;
+}
+
+#streamMessage{
+  position: absolute;
+  width: 400px;
+  right: 50%;
+  transform: translate(50%, 0%);
+  display: none;
+  margin-top: 24px;
+}
+
+@keyframes main-animation {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+header {
+  height: 70px;
+}
+
+a {
+  text-decoration: none !important;
+}
+
+.logo {
+  width: 50px;
+}
+
+.header-with-logo {
+  display: flex;
+  flex-direction: row;
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  align-items: center;
+  gap: 16px;
+  color: #0d6efd;
+}
+
+.user-info {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  position: fixed;
+  right: 24px;
+  top: 24px;
+}
+
+.header-link:hover {
+  color: inherit;
+}
+
+.main-title {
+  margin-bottom: 0px;
+  font-size: 24px;
+}
+
+.main-controls {
+  padding-bottom: 0.7rem;
+  height: 170px;
+}
+
+.sound-clips {
+  box-shadow: inset 0 3px 4px rgb(0 0 0 / 70%);
+  background-color: rgb(0 0 0 / 10%);
+  height: calc(100% - 240px - 0.7rem);
+  overflow: scroll;
+}
+
+input[type="checkbox"] {
+  position: absolute;
+  top: -100px;
+}
+
+aside {
+  position: fixed;
+  top: 0;
+  left: 0;
+  text-shadow: 1px 1px 1px black;
+  width: 100%;
+  height: 100%;
+  transform: translateX(100%);
+  transition: 0.6s all;
+  background-color: #999;
+  background-image: linear-gradient(to top right,
+      rgb(0 0 0 / 0%),
+      rgb(0 0 0 / 50%));
+}
+
+input[type="checkbox"]:checked~aside {
+  transform: translateX(0);
+}
+
+.form {
+  width: 400px;
+}
+
+#dropdownSelector select {
+  margin-bottom: 16px;
+}
+
+#dropdownSelector input {
+  margin-top: 16px;
+  width: -webkit-fill-available;
+}
+
+.startBtn {
+  width: 100px !important;
+  height: 100px !important;
+  border-radius: 50% !important;
+  display: flex !important; 
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.index-start {
+  animation-timing-function: ease-in;
+}
+
+#loader {
+  display: flex;
+  height: 12px;
+  gap: 6px;
+  position: absolute;
+  right: 50%;
+  transform: translate(50%, 0%);
+  top: -30%;
+}
+
+#loader span {
+  width: 12px;
+  background-color: #0d6efd;
+  border-radius: 100%;
+  animation-name: loader-animation;
+  animation-duration: 1.5s;
+  animation-iteration-count: infinite;
+}
+
+#loader span:nth-child(1) {
+  animation-delay: 80ms;
+}
+
+#loader span:nth-child(2) {
+  animation-delay: 160ms;
+}
+
+#loader span:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+@keyframes loader-animation {
+  0% {
+    transform: translateY(0px);
+    opacity: 0;
+  }
+
+  50% {
+    transform: translateY(-24px);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(0px);
+    opacity: 0;
+  }
+}
